@@ -1,20 +1,20 @@
 package com.valentichu.server.base.security.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.valentichu.server.base.exception.ServiceException;
-import com.valentichu.server.core.domain.User;
-import com.valentichu.server.core.mapper.UserMapper;
+
 import com.valentichu.server.base.security.service.AuthenticationService;
+import com.valentichu.server.base.security.value.SessionKey;
 import com.valentichu.server.common.util.JwtTokenUtils;
-import com.valentichu.server.base.security.value.Account;
-import com.valentichu.server.base.security.value.RegisterInfo;
-import com.valentichu.server.base.security.value.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.sql.Timestamp;
 
@@ -26,51 +26,41 @@ import java.sql.Timestamp;
  */
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
-    private final UserMapper userMapper;
+    private final RestTemplate restTemplate;
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+    @Value("${wx.appId}")
+    String appId;
+    @Value("${wx.appSecret}")
+    String appSecret;
 
     @Autowired
-    public AuthenticationServiceImpl(AuthenticationManager authenticationManager, JwtTokenUtils jwtTokenUtils, UserMapper userMapper) {
-        this.authenticationManager = authenticationManager;
+    public AuthenticationServiceImpl(JwtTokenUtils jwtTokenUtils, RestTemplateBuilder restTemplateBuilder) {
         this.jwtTokenUtils = jwtTokenUtils;
-        this.userMapper = userMapper;
+        this.restTemplate = restTemplateBuilder.build();
+        ;
     }
 
     @Override
-    public void register(RegisterInfo registerInfo) throws ServiceException {
-        final String userName = registerInfo.getUserName();
-        final String rawPassword = registerInfo.getUserPassword();
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(rawPassword)) {
-            throw new ServiceException("注册用户名或密码不能为空");
-        }
-        if (userMapper.getUser(userName) != null) {
-            throw new ServiceException("已有该用户");
+    public String login(String code) throws ServiceException {
+        if (StringUtils.isEmpty(code) || StringUtils.isEmpty(code)) {
+            throw new ServiceException("用户code不能为空");
         }
 
-        User userToAdd = new User();
-        userToAdd.setUserName(userName);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        userToAdd.setUserPassword(encoder.encode(rawPassword));
-        userToAdd.setRoleId(1);
-        userToAdd.setGmtCreate(new Timestamp(System.currentTimeMillis()));
-        userMapper.saveUser(userToAdd);
-    }
-
-    @Override
-    public UserInfo login(Account account) throws BadCredentialsException {
-        final String userName = account.getUserName();
-        final String password = account.getUserPassword();
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(userName)) {
-            throw new ServiceException("用户名或密码不能为空");
+        final String url = "https://api.weixin.qq.com/sns/jscode2session";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("appid", appId)
+                .queryParam("secret", appSecret)
+                .queryParam("js_code", code)
+                .queryParam("grant_type", "authorization_code");
+        final String responseString = restTemplate.getForObject(builder.build().encode().toUri(), String.class);
+        SessionKey response = JSON.parseObject(responseString, SessionKey.class);
+        if (response == null) {
+            throw new ServiceException("登录信息有误");
         }
 
-        UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(userName, password);
-        //此处如果校验失败会抛出BadCredentialsException由错误统一处理类返回给用户
-        authenticationManager.authenticate(upToken);
-        final String token = jwtTokenUtils.generateToken(userName);
+        return jwtTokenUtils.generateToken(response.getOpenId());
 
-        return new UserInfo(userName, token);
     }
 
     @Override

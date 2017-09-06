@@ -3,11 +3,8 @@ package com.valentichu.server.base.exception.handler;
 import com.valentichu.server.base.exception.ServiceException;
 import com.valentichu.server.common.value.Result;
 import com.valentichu.server.common.value.ResultCodeEnum;
-import com.valentichu.server.base.configurer.WebMvcConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.HandlerMethod;
@@ -45,20 +42,6 @@ public class DefaultExceptionHandler {
     public Result servletException(HttpServletRequest request, Object handler, Exception e) {
         Result result = new Result();
         result.setCode(ResultCodeEnum.FAIL).setMessage(e.getMessage());
-        return result;
-    }
-
-    @ExceptionHandler(value = BadCredentialsException.class)
-    public Result badCredentialsException(HttpServletRequest request, Object handler, Exception e) {
-        Result result = new Result();
-        result.setCode(ResultCodeEnum.UNAUTHORIZED).setMessage("未通过身份认证");
-        return result;
-    }
-
-    @ExceptionHandler(value = AccessDeniedException.class)
-    public Result accessDeniedException(HttpServletRequest request, Object handler, Exception e) {
-        Result result = new Result();
-        result.setCode(ResultCodeEnum.FORBIDDEN).setMessage("不允许访问");
         return result;
     }
 

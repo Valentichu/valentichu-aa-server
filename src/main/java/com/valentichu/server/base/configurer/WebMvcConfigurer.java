@@ -3,11 +3,9 @@ package com.valentichu.server.base.configurer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.valentichu.server.base.security.interceptor.CookieRefreshInterceptor;
 import com.valentichu.server.base.security.interceptor.TokenValidateInterceptor;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
@@ -30,24 +28,13 @@ import java.util.List;
 @Configuration
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     /**
-     * 装载是否使用Cookie中的Token验证
-     */
-    @Value("${jwt.enableCookie}")
-    private boolean enableCookie;
-
-    /**
      * 装载Token认证拦截器
      */
     private final TokenValidateInterceptor tokenValidateInterceptor;
-    /**
-     * 装载Cookie处理Token的拦截器
-     */
-    private final CookieRefreshInterceptor cookieRefreshInterceptor;
 
     @Autowired
-    public WebMvcConfigurer(TokenValidateInterceptor tokenValidateInterceptor, CookieRefreshInterceptor cookieRefreshInterceptor) {
+    public WebMvcConfigurer(TokenValidateInterceptor tokenValidateInterceptor) {
         this.tokenValidateInterceptor = tokenValidateInterceptor;
-        this.cookieRefreshInterceptor = cookieRefreshInterceptor;
     }
 
     /**
@@ -75,7 +62,9 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 SerializerFeature.WriteNullNumberAsZero);//Number null -> 0
         converter.setFastJsonConfig(config);
         List<MediaType> list = new ArrayList<>();
+        list.add(MediaType.TEXT_PLAIN);
         list.add(MediaType.APPLICATION_JSON_UTF8);
+        list.add(MediaType.TEXT_HTML);
         converter.setSupportedMediaTypes(list);
         converters.add(converter);
     }
@@ -86,12 +75,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //Token认证拦截器,参数为不需要认证是否登录的域(swagger-resource路径下存放swagger2相关信息，不需要认证)
-        registry.addInterceptor(tokenValidateInterceptor).excludePathPatterns("/swagger-resources/**", "/auth/**", "/goods");
-        //如果允许使用Cookie,自动更新Cookie中的Token，参数为不需要自动更新Cookie中的Token的域
-        if (enableCookie) {
-            registry.addInterceptor(cookieRefreshInterceptor).excludePathPatterns("/swagger-resources/**", "/auth/**", "/goods");
-        }
-
+        registry.addInterceptor(tokenValidateInterceptor).excludePathPatterns("/swagger-resources/**", "/auth/**");
     }
 
     /**

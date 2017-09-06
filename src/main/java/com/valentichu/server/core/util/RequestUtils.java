@@ -31,7 +31,7 @@ public class RequestUtils {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
-    public String getUserNameFromHeader(HttpServletRequest request) throws ServiceException {
+    public String getUserIdFromHeader(HttpServletRequest request) throws ServiceException {
         if (request == null) {
             throw new ServiceException("请求无效");
         }
@@ -39,10 +39,10 @@ public class RequestUtils {
         if (StringUtils.isEmpty(token) || !token.startsWith(tokenHead)) {
             throw new ServiceException("Token无效");
         }
-        final String userName = jwtTokenUtils.getUserNameFromToken(token);
-        if (StringUtils.isEmpty(userName)) {
+        final String userId = jwtTokenUtils.getUserIdFromToken(token);
+        if (StringUtils.isEmpty(userId)) {
             throw new ServiceException("Token无效");
         }
-        return userName;
+        return userId;
     }
 }

@@ -4,10 +4,6 @@ import com.valentichu.server.base.exception.ServiceException;
 import com.valentichu.server.common.value.ResultGenerator;
 import com.valentichu.server.common.value.Result;
 import com.valentichu.server.base.security.service.AuthenticationService;
-import com.valentichu.server.common.util.CookieUtils;
-import com.valentichu.server.base.security.value.Account;
-import com.valentichu.server.base.security.value.RegisterInfo;
-import com.valentichu.server.base.security.value.UserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,29 +28,23 @@ public class AuthenticationController {
     private String header;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
-    @Value("${jwt.enableCookie}")
-    private boolean enableCookie;
     @Value("${jwt.expiration}")
     private Integer expiration;
 
     private final AuthenticationService authenticationService;
-    private final CookieUtils cookieUtils;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, CookieUtils cookieUtils) {
+    public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
-        this.cookieUtils = cookieUtils;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    @ApiOperation(value = "登录", notes = "登录")
-    public Result createAuthenticationToken(@RequestBody @ApiParam(value = "用户名和密码", required = true) Account account,
-                                            HttpServletResponse response) throws AuthenticationException {
-        final UserInfo userInfo = authenticationService.login(account);
-        Result result = ResultGenerator.genSuccessResult(userInfo);
-        if (enableCookie) {
-            cookieUtils.addCookie(header, userInfo.getToken(), "/", expiration, response);
-        }
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ApiOperation(value = "通过小程序发来的code向微信服务器获取用户唯一标记openid,加密成token返回给客户端",
+            notes = "通过小程序发来的code向微信服务器获取用户唯一标记openid,加密成token返回给客户端")
+    public Result createAuthenticationToken(@RequestParam @ApiParam("用户的code") String code,
+                                            HttpServletResponse response) throws ServiceException {
+        final String token = authenticationService.login(code);
+        Result result = ResultGenerator.genSuccessResult(token);
         return result;
     }
 
@@ -64,13 +53,6 @@ public class AuthenticationController {
     public Result refreshAndGetAuthenticationToken(HttpServletRequest request) throws ServiceException {
         final String oldToken = request.getHeader(header);
         final String refreshedToken = authenticationService.refresh(oldToken);
-        return ResultGenerator.genSuccessResult(new UserInfo(refreshedToken));
-    }
-
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    @ApiOperation(value = "注册", notes = "注册")
-    public Result register(@RequestBody @ApiParam(value = "新增的用户", required = true) RegisterInfo registerInfo) throws ServiceException {
-        authenticationService.register(registerInfo);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(refreshedToken);
     }
 }
