@@ -58,7 +58,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (response == null) {
             throw new ServiceException("登录信息有误");
         }
-
         return jwtTokenUtils.generateToken(response.getOpenId());
 
     }

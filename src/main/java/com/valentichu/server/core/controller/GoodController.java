@@ -25,22 +25,6 @@ import java.util.List;
 @RestController
 @Api(value = "商品相关的API", description = "商品相关的API")
 public class GoodController {
-    private final GoodService goodService;
 
-    @Autowired
-    public GoodController(GoodService goodService) {
-        this.goodService = goodService;
-    }
 
-    @RequestMapping(value = "/goods", method = RequestMethod.GET)
-    @ApiOperation(value = "获取商品列表", notes = "获取商品列表 ")
-    public Result listGoods(@RequestParam(required = false, name = "page") @ApiParam("页数") Integer page,
-                            @RequestParam(required = false, name = "pageSize") @ApiParam("页面显示条数") Integer pageSize,
-                            @RequestParam(required = false, name = "priceLevel") @ApiParam("价格区间") Integer priceLevel,
-                            @RequestParam(required = false, name = "sort") @ApiParam("排序") Integer sort) {
-        List<Good> goodList = goodService.listGoods(page, pageSize, priceLevel, sort);
-        Page data = new Page();
-        data.setList(goodList);
-        return ResultGenerator.genSuccessResult(data);
-    }
 }

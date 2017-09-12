@@ -62,9 +62,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 SerializerFeature.WriteNullNumberAsZero);//Number null -> 0
         converter.setFastJsonConfig(config);
         List<MediaType> list = new ArrayList<>();
-        list.add(MediaType.TEXT_PLAIN);
         list.add(MediaType.APPLICATION_JSON_UTF8);
-        list.add(MediaType.TEXT_HTML);
+        list.add(MediaType.APPLICATION_FORM_URLENCODED);
         converter.setSupportedMediaTypes(list);
         converters.add(converter);
     }
