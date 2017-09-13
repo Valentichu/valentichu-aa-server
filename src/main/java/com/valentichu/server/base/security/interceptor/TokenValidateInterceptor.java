@@ -38,26 +38,19 @@ public class TokenValidateInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServiceException {
-        String userId = getUserIdFromHeader(request);
-        if (StringUtils.isEmpty(userId)) {
-            throw new ServiceException("Token invalid");
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * 校验Header中的Token
-     */
-    private String getUserIdFromHeader(HttpServletRequest request) {
         final String token = request.getHeader(header);
         if (StringUtils.isEmpty(token) || !token.startsWith(tokenHead)) {
-            return null;
+            throw new ServiceException("Token invalid");
+        }
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            throw new ServiceException("Token expired");
         }
         String userId = jwtTokenUtils.getUserIdFromToken(token);
         if (StringUtils.isEmpty(userId)) {
-            return null;
+            throw new ServiceException("Token invalid");
         }
-        return userId;
+
+        return true;
+
     }
 }

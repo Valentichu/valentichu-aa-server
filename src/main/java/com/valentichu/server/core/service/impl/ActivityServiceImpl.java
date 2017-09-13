@@ -1,17 +1,20 @@
 package com.valentichu.server.core.service.impl;
 
 import com.valentichu.server.base.exception.ServiceException;
+import com.valentichu.server.core.domain.Activity;
+import com.valentichu.server.core.domain.ActivityUser;
 import com.valentichu.server.core.mapper.ActivityMapper;
-import com.valentichu.server.core.mapper.GoodMapper;
 import com.valentichu.server.core.service.ActivityService;
 import com.valentichu.server.core.value.ActivityDetail;
 import com.valentichu.server.core.value.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 活动Service的实现
@@ -29,23 +32,45 @@ public class ActivityServiceImpl implements ActivityService {
         this.activityMapper = activityMapper;
     }
 
+    @Transactional
     @Override
-    public Integer saveActivity(String openId, ActivityDetail activityDetail) throws Exception {
-        System.out.println(activityDetail.toString());
+    public int saveActivity(String openId, ActivityDetail activityDetail) throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date parsed = format.parse(activityDetail.getCreatedDate());
         java.sql.Date createdDate = new java.sql.Date(parsed.getTime());
-        Integer activityId = activityMapper.saveActivity(activityDetail.getActivityName(), createdDate, openId);
-        if (activityId == null) {
+        Activity activity = new Activity();
+        activity.setActivityName(activityDetail.getActivityName());
+        activity.setOpenId(openId);
+        activity.setCreatedDate(createdDate);
+        int count = activityMapper.saveActivity(activity);
+        if (count == 0) {
             throw new ServiceException("插入数据库失败");
         }
         for (UserDetail userDetail : activityDetail.getUserDetailList()) {
+            ActivityUser activityUser = new ActivityUser();
             if (userDetail.getBindOpenId()) {
-                activityMapper.bindUser(activityId, userDetail.getUserName(), userDetail.getUserWeight(), openId);
-            } else {
-                activityMapper.bindUser(activityId, userDetail.getUserName(), userDetail.getUserWeight(), null);
+                activityUser.setOpenId(openId);
+
             }
+            activityUser.setActivityId(activity.getActivityId());
+            activityUser.setUserName(userDetail.getUserName());
+            activityUser.setUserWeight(userDetail.getUserWeight());
+            activityMapper.bindUser(activityUser);
         }
-        return null;
+        return activity.getActivityId();
+    }
+
+    @Override
+    public List<UserDetail> getUsers(Integer activityId) {
+        List<ActivityUser> activityUserList = activityMapper.getUser(activityId);
+        List<UserDetail> userDetailList = new ArrayList<>();
+        for (ActivityUser activityUser : activityUserList) {
+            UserDetail userDetail = new UserDetail();
+            userDetail.setUserId(activityUser.getUserId());
+            userDetail.setUserName(activityUser.getUserName());
+            userDetail.setUserWeight(activityUser.getUserWeight());
+            userDetailList.add(userDetail);
+        }
+        return userDetailList;
     }
 }

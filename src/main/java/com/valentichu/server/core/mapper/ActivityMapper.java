@@ -1,9 +1,10 @@
 package com.valentichu.server.core.mapper;
 
-import com.valentichu.server.core.domain.User;
-import org.apache.ibatis.annotations.Param;
+import com.valentichu.server.core.domain.Activity;
+import com.valentichu.server.core.domain.ActivityUser;
+import com.valentichu.server.core.value.UserDetail;
 
-import java.sql.Date;
+import java.util.List;
 
 /**
  * 活动相关数据库接口
@@ -15,28 +16,24 @@ public interface ActivityMapper {
     /**
      * 向数据库保存活动
      *
-     * @param activityName 活动名称
-     * @param createdDate  创建时间
-     * @param openId       用户openId
-     * @return 活动主键
+     * @param activity 活动名称
+     * @return 插入的条数
      */
-    Integer saveActivity(@Param("activityName") String activityName,
-                         @Param("createdDate") Date createdDate,
-                         @Param("openId") String openId);
-
-    //TODO 改为一对多直接存对象
+    Integer saveActivity(Activity activity);
 
     /**
      * 向数据库中的活动关联用户
      *
-     * @param activityId 活动Id
-     * @param userName   用户名称
-     * @param userWeight 用户权重
-     * @param openId     用户openId,可以为空
-     * @return 用户主键
+     * @param activityUser 活动用户
+     * @return 插入的条数
      */
-    Integer bindUser(@Param("activityId") Integer activityId,
-                     @Param("userName") String userName,
-                     @Param("userWeight") Integer userWeight,
-                     @Param("openId") String openId);
+    Integer bindUser(ActivityUser activityUser);
+
+    /**
+     *取得活动关联用户
+     *
+     * @param activityId 活动Id
+     * @return 插入的条数
+     */
+    List<ActivityUser> getUser(int activityId);
 }

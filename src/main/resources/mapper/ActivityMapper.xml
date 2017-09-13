@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.valentichu.server.core.mapper.ActivityMapper">
-    <insert id="saveActivity" useGeneratedKeys="true" keyProperty="activity_id">
+    <resultMap id="userDetailResultMap" type="com.valentichu.server.core.domain.ActivityUser">
+        <result property="userId" column="user_id" javaType="integer" jdbcType="BIGINT"/>
+        <result property="userName" column="user_name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="userWeight" column="user_weight" javaType="integer" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="saveActivity" parameterType="com.valentichu.server.core.domain.Activity" useGeneratedKeys="true"
+            keyProperty="activityId">
         INSERT INTO activity (activity_name, created_date, open_id, gmt_create)
         VALUES (
         #{activityName},
@@ -9,7 +16,8 @@
         #{openId},
         now())
     </insert>
-    <insert id="bindUser" useGeneratedKeys="true" keyProperty="user_id">
+    <insert id="bindUser" parameterType="com.valentichu.server.core.domain.ActivityUser" useGeneratedKeys="true"
+            keyProperty="userId">
         INSERT INTO activity_user (activity_id, user_name, user_weight, open_id, gmt_create)
         VALUES (
         #{activityId},
@@ -18,4 +26,9 @@
         #{openId},
         now())
     </insert>
+    <select id="getUser" resultMap="userDetailResultMap">
+        SELECT user_id, user_name, user_weight
+        FROM activity_user
+        WHERE activity_id = #{activityId}
+    </select>
 </mapper>

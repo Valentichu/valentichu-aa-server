@@ -56,11 +56,6 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
-        FastJsonConfig config = new FastJsonConfig();
-        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,//保留空的字段
-                SerializerFeature.WriteNullStringAsEmpty,//String null -> ""
-                SerializerFeature.WriteNullNumberAsZero);//Number null -> 0
-        converter.setFastJsonConfig(config);
         List<MediaType> list = new ArrayList<>();
         list.add(MediaType.APPLICATION_JSON_UTF8);
         list.add(MediaType.APPLICATION_FORM_URLENCODED);

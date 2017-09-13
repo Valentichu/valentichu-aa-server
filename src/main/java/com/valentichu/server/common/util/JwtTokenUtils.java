@@ -39,6 +39,15 @@ public class JwtTokenUtils {
         }
     }
 
+    public Boolean isTokenExpired(String originalToken) {
+        try {
+            final Date expiration = getExpirationDateFromToken(originalToken);
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String generateToken(String userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERID, userId);
@@ -78,15 +87,6 @@ public class JwtTokenUtils {
             return claims.getExpiration();
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    private Boolean isTokenExpired(String originalToken) {
-        try {
-            final Date expiration = getExpirationDateFromToken(originalToken);
-            return expiration.before(new Date());
-        } catch (Exception e) {
-            return false;
         }
     }
 

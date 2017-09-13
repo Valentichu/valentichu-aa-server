@@ -13,8 +13,18 @@ import java.io.Serializable;
 public class UserDetail implements Serializable {
     private static final long serialVersionUID = -9198497806215614323L;
 
+    private Integer userId;
     private String userName;
     private Integer userWeight;
+    private Boolean bindOpenId;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Boolean getBindOpenId() {
         return bindOpenId;
@@ -23,9 +33,6 @@ public class UserDetail implements Serializable {
     public void setBindOpenId(Boolean bindOpenId) {
         this.bindOpenId = bindOpenId;
     }
-
-    private Boolean bindOpenId;
-
 
     public String getUserName() {
         return userName;
