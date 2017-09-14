@@ -1,28 +1,26 @@
-package com.valentichu.server.core.domain;
+package com.valentichu.server.core.value;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.List;
 
 /**
- * 活动DO
+ * 活动的部分信息的VO
  *
  * @author Valentichu
- * created on 2017/08/25
+ * created on 2017/09/14
  */
-public class Activity implements Serializable {
-    private static final long serialVersionUID = -4329742857608071857L;
+public class ActivityOverview implements Serializable {
+    private static final long serialVersionUID = 1740411672207968737L;
 
     private Integer activityId;
     private String activityName;
-    private String openId;
-    private Timestamp gmtCreate;
-    private Timestamp gmtModified;
     @JSONField(format = "yyyy-MM-dd")
     private Date createdDate;
+    private List<Total> totals;
 
     public Integer getActivityId() {
         return activityId;
@@ -40,36 +38,20 @@ public class Activity implements Serializable {
         this.activityName = activityName;
     }
 
-    public String getOpenId() {
-        return openId;
-    }
-
-    public void setOpenId(String openId) {
-        this.openId = openId;
-    }
-
-    public Timestamp getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Timestamp gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Timestamp getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Timestamp gmtModified) {
-        this.gmtModified = gmtModified;
-    }
-
     public Date getCreatedDate() {
         return createdDate;
     }
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public List<Total> getTotals() {
+        return totals;
+    }
+
+    public void setTotals(List<Total> totals) {
+        this.totals = totals;
     }
 
     @Override

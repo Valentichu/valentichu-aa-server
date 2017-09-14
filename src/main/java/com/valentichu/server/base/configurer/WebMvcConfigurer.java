@@ -69,7 +69,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //Token认证拦截器,参数为不需要认证是否登录的域(swagger-resource路径下存放swagger2相关信息，不需要认证)
-        registry.addInterceptor(tokenValidateInterceptor).excludePathPatterns("/swagger-resources/**", "/auth/**");
+        /*registry.addInterceptor(tokenValidateInterceptor).excludePathPatterns("/swagger-resources/**", "/auth/**");*/
     }
 
     /**

@@ -6,6 +6,33 @@
         <result property="userName" column="user_name" javaType="string" jdbcType="VARCHAR"/>
         <result property="userWeight" column="user_weight" javaType="integer" jdbcType="INTEGER"/>
     </resultMap>
+    <resultMap id="statisticsDetailMap" type="com.valentichu.server.core.value.StatisticsDetail">
+        <result property="itemDescription" column="item_description" javaType="String" jdbcType="VARCHAR"/>
+        <result property="createdDate" column="created_date" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result property="itemTotal" column="item_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="itemId" column="item_id" javaType="integer" jdbcType="TINYINT"/>
+        <result property="itemType" column="item_type" javaType="integer" jdbcType="TINYINT"/>
+        <result property="fundOrConsume" column="fund_or_consume" javaType="integer" jdbcType="TINYINT"/>
+        <result property="userName" column="user_name" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="statisticsSettlementMap" type="com.valentichu.server.core.value.StatisticsSettlement">
+        <result property="total" column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="userId" column="user_id" javaType="integer" jdbcType="TINYINT"/>
+        <result property="userName" column="user_name" javaType="string" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="statisticsConsumeTypeMap" type="com.valentichu.server.core.value.StatisticsConsumeType">
+        <result property="itemType" column="item_type" javaType="integer" jdbcType="TINYINT"/>
+        <result property="total" column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+    </resultMap>
+    <resultMap id="activityOverviewMap" type="com.valentichu.server.core.value.ActivityOverview">
+        <result property="activityId" column="activity_id" javaType="integer" jdbcType="BIGINT"/>
+        <result property="activityName" column="activity_name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="createdDate" column="created_date" javaType="java.sql.Date" jdbcType="DATE"/>
+        <collection property="totals" ofType="com.valentichu.server.core.value.Total">
+            <result property="total" column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+            <result property="fundOrConsume" column="fund_or_consume" javaType="integer" jdbcType="TINYINT"/>
+        </collection>
+    </resultMap>
 
     <insert id="saveActivity" parameterType="com.valentichu.server.core.domain.Activity" useGeneratedKeys="true"
             keyProperty="activityId">
@@ -26,9 +53,80 @@
         #{openId},
         now())
     </insert>
+    <insert id="saveItem" parameterType="com.valentichu.server.core.domain.Item" useGeneratedKeys="true"
+            keyProperty="itemId">
+        INSERT INTO item (item_type, item_description, item_note, fund_or_consume, activity_id, user_id, item_total, created_date, gmt_create)
+        VALUES (
+        #{itemType},
+        #{itemDescription},
+        #{itemNote},
+        #{fundOrConsume},
+        #{activityId},
+        #{userId},
+        #{itemTotal},
+        #{createdDate},
+        now())
+    </insert>
+    <insert id="bindItemDetail" parameterType="com.valentichu.server.core.domain.ItemDetail" useGeneratedKeys="true"
+            keyProperty="detailId">
+       INSERT INTO item_detail (item_id, user_id, activity_id, user_weight, user_name, exp, bill, fund_or_consume, gmt_create)
+        VALUES (
+        #{itemId},
+        #{userId},
+        #{activityId},
+        #{userWeight},
+        #{userName},
+        #{exp},
+        #{bill},
+        #{fundOrConsume},
+        now())
+    </insert>
     <select id="getUser" resultMap="userDetailResultMap">
         SELECT user_id, user_name, user_weight
         FROM activity_user
         WHERE activity_id = #{activityId}
+    </select>
+    <select id="listStatisticsDetail" resultMap="statisticsDetailMap">
+        SELECT i.item_description,
+        i.item_id,
+        i.created_date,
+        i.item_total,
+        i.item_type,
+        i.fund_or_consume,
+        id.user_name
+        FROM item i
+        LEFT JOIN item_detail id
+        ON i.item_id = id.item_id
+        WHERE i.activity_id = #{activityId}
+        AND (
+        (id.fund_or_consume = 1 AND id.exp > 0)
+        OR (id.fund_or_consume= 0 AND id.bill > 0)
+        )
+        ORDER BY i.gmt_create
+    </select>
+    <select id="listStatisticsSettlement" resultMap="statisticsSettlementMap">
+        SELECT SUM(exp) - SUM(bill) AS total,
+        user_name,
+        user_id
+        FROM item_detail
+        WHERE activity_id = #{activityId}
+        GROUP BY user_id, user_name
+        ORDER BY user_id
+    </select>
+    <select id="listStatisticsConsumeType" resultMap="statisticsConsumeTypeMap">
+        SELECT item_type,
+        SUM(item_total) AS total
+        FROM item
+        WHERE activity_id = #{activityId}
+        AND fund_or_consume = 1
+        GROUP BY item_type
+    </select>
+    <select id="listActivityOverview" resultMap="activityOverviewMap">
+       SELECT SUM(ITEM_TOTAL) as total, activity_id, activity_name, fund_or_consume, created_date FROM
+       (SELECT a.activity_id, a.activity_name, a.created_date, i.fund_or_consume, i.item_total FROM valentichu_aa.activity a
+       LEFT JOIN valentichu_aa.item i
+       ON a.activity_id = i.activity_id
+       WHERE open_id = #{openId}) t
+       GROUP BY activity_id, activity_name, fund_or_consume, created_date
     </select>
 </mapper>

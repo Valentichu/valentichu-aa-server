@@ -1,8 +1,10 @@
 package com.valentichu.server.core.value;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -15,7 +17,8 @@ public class ActivityDetail implements Serializable {
     private static final long serialVersionUID = 2115941636644124825L;
 
     private String activityName;
-    private String createdDate;
+    @JSONField(format = "yyyy-MM-dd")
+    private Date createdDate;
     List<UserDetail> userDetailList;
 
     public String getActivityName() {
@@ -26,11 +29,11 @@ public class ActivityDetail implements Serializable {
         this.activityName = activityName;
     }
 
-    public String getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
