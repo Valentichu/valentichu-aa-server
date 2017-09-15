@@ -16,7 +16,7 @@ public class UserDetail implements Serializable {
     private Integer userId;
     private String userName;
     private Integer userWeight;
-    private Boolean bindOpenId;
+    private Boolean currentUser = false;
 
     public Integer getUserId() {
         return userId;
@@ -26,12 +26,12 @@ public class UserDetail implements Serializable {
         this.userId = userId;
     }
 
-    public Boolean getBindOpenId() {
-        return bindOpenId;
+    public Boolean getCurrentUser() {
+        return currentUser;
     }
 
-    public void setBindOpenId(Boolean bindOpenId) {
-        this.bindOpenId = bindOpenId;
+    public void setCurrentUser(Boolean currentUser) {
+        this.currentUser = currentUser;
     }
 
     public String getUserName() {

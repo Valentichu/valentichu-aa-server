@@ -60,7 +60,8 @@ public class ActivityController {
     @ApiOperation(value = "列出活动的用户", notes = "列出活动的用户 ")
     public Result listUser(@PathVariable("activityId") @ApiParam("活动Id") int activityId,
                            HttpServletRequest request) {
-        List<UserDetail> userDetailList = activityService.getUsers(activityId);
+        String openId = requestUtils.getUserIdFromHeader(request);
+        List<UserDetail> userDetailList = activityService.getUsers(openId, activityId);
         return ResultGenerator.genSuccessResult(userDetailList);
     }
 

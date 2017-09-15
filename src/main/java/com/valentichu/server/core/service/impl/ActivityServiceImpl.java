@@ -44,9 +44,8 @@ public class ActivityServiceImpl implements ActivityService {
         }
         for (UserDetail userDetail : activityDetail.getUserDetailList()) {
             ActivityUser activityUser = new ActivityUser();
-            if (userDetail.getBindOpenId()) {
+            if (userDetail.getCurrentUser()) {
                 activityUser.setOpenId(openId);
-
             }
             activityUser.setActivityId(activity.getActivityId());
             activityUser.setUserName(userDetail.getUserName());
@@ -57,7 +56,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<UserDetail> getUsers(Integer activityId) {
+    public List<UserDetail> getUsers(String openId, Integer activityId) {
         List<ActivityUser> activityUserList = activityMapper.getUser(activityId);
         List<UserDetail> userDetailList = new ArrayList<>();
         for (ActivityUser activityUser : activityUserList) {
@@ -65,6 +64,9 @@ public class ActivityServiceImpl implements ActivityService {
             userDetail.setUserId(activityUser.getUserId());
             userDetail.setUserName(activityUser.getUserName());
             userDetail.setUserWeight(activityUser.getUserWeight());
+            if (openId.equals(activityUser.getOpenId())) {
+                userDetail.setCurrentUser(true);
+            }
             userDetailList.add(userDetail);
         }
         return userDetailList;

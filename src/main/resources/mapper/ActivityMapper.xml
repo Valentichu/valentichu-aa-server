@@ -4,6 +4,7 @@
     <resultMap id="userDetailResultMap" type="com.valentichu.server.core.domain.ActivityUser">
         <result property="userId" column="user_id" javaType="integer" jdbcType="BIGINT"/>
         <result property="userName" column="user_name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="openId" column="open_id" javaType="string" jdbcType="VARCHAR"/>
         <result property="userWeight" column="user_weight" javaType="integer" jdbcType="INTEGER"/>
     </resultMap>
     <resultMap id="statisticsDetailMap" type="com.valentichu.server.core.value.StatisticsDetail">
@@ -82,9 +83,10 @@
         now())
     </insert>
     <select id="getUser" resultMap="userDetailResultMap">
-        SELECT user_id, user_name, user_weight
+        SELECT user_id, user_name, user_weight , open_id
         FROM activity_user
         WHERE activity_id = #{activityId}
+        ORDER BY user_id
     </select>
     <select id="listStatisticsDetail" resultMap="statisticsDetailMap">
         SELECT i.item_description,
@@ -102,7 +104,7 @@
         (id.fund_or_consume = 1 AND id.exp > 0)
         OR (id.fund_or_consume= 0 AND id.bill > 0)
         )
-        ORDER BY i.gmt_create
+        ORDER BY i.item_id
     </select>
     <select id="listStatisticsSettlement" resultMap="statisticsSettlementMap">
         SELECT SUM(exp) - SUM(bill) AS total,
@@ -128,5 +130,6 @@
        ON a.activity_id = i.activity_id
        WHERE open_id = #{openId}) t
        GROUP BY activity_id, activity_name, fund_or_consume, created_date
+        ORDER BY activity_id
     </select>
 </mapper>

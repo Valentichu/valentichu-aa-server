@@ -29,10 +29,11 @@ public interface ActivityService {
     /**
      * 列出用户信息
      *
-     * @param activityId 活动的openId
+     * @param openId 当前用户的openId
+     * @param activityId 活动的Id
      * @return 用户信息列表
      */
-    List<UserDetail> getUsers(Integer activityId);
+    List<UserDetail> getUsers(String openId, Integer activityId);
 
     /**
      * 新建活动账目
