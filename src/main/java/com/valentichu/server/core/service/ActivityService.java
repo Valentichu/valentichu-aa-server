@@ -2,12 +2,8 @@ package com.valentichu.server.core.service;
 
 import com.valentichu.server.base.exception.ServiceException;
 import com.valentichu.server.core.domain.Item;
-import com.valentichu.server.core.value.ActivityDetail;
-import com.valentichu.server.core.value.ActivityOverview;
-import com.valentichu.server.core.value.StatisticsIndex;
-import com.valentichu.server.core.value.UserDetail;
+import com.valentichu.server.core.value.*;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -58,4 +54,12 @@ public interface ActivityService {
      * @return 活动概览列表
      */
     List<ActivityOverview> listActivityOverview(String openId);
+
+    /**
+     * 查询某用户的所有账目的概览
+     *
+     * @param userId 用户的userId
+     * @return 账目的概览列表
+     */
+    List<SettlementDetail> listItemOverviewByUser(int userId);
 }

@@ -5,12 +5,8 @@ import com.valentichu.server.common.value.Result;
 import com.valentichu.server.common.value.ResultGenerator;
 import com.valentichu.server.core.domain.Item;
 import com.valentichu.server.core.service.ActivityService;
-import com.valentichu.server.core.service.UserService;
 import com.valentichu.server.core.util.RequestUtils;
-import com.valentichu.server.core.value.ActivityDetail;
-import com.valentichu.server.core.value.ActivityOverview;
-import com.valentichu.server.core.value.StatisticsIndex;
-import com.valentichu.server.core.value.UserDetail;
+import com.valentichu.server.core.value.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -63,6 +59,13 @@ public class ActivityController {
         String openId = requestUtils.getUserIdFromHeader(request);
         List<UserDetail> userDetailList = activityService.getUsers(openId, activityId);
         return ResultGenerator.genSuccessResult(userDetailList);
+    }
+
+    @RequestMapping(value = "/{activityId}/user/{userId}/item", method = RequestMethod.GET)
+    @ApiOperation(value = "列出用户的账目", notes = "列出用户的账目")
+    public Result listItemByUser(@PathVariable("userId") @ApiParam("用户Id") int userId) {
+        List<SettlementDetail> settlementDetailList = activityService.listItemOverviewByUser(userId);
+        return ResultGenerator.genSuccessResult(settlementDetailList);
     }
 
     @RequestMapping(value = "/{activityId}/item", method = RequestMethod.POST)

@@ -86,4 +86,12 @@ public interface ActivityMapper {
      * @return 活动的概览列表
      */
     List<ActivityOverview> listActivityOverview(String openId);
+
+    /**
+     * 查询某用户的所有账目的概览
+     *
+     * @param userId 用户的userId
+     * @return 账目的概览列表
+     */
+    List<SettlementDetail> listItemByUser(int userId);
 }

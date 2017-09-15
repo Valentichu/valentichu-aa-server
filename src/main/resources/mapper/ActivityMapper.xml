@@ -11,14 +11,14 @@
         <result property="itemDescription" column="item_description" javaType="String" jdbcType="VARCHAR"/>
         <result property="createdDate" column="created_date" javaType="java.sql.Date" jdbcType="DATE"/>
         <result property="itemTotal" column="item_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
-        <result property="itemId" column="item_id" javaType="integer" jdbcType="TINYINT"/>
+        <result property="itemId" column="item_id" javaType="integer" jdbcType="BIGINT"/>
         <result property="itemType" column="item_type" javaType="integer" jdbcType="TINYINT"/>
         <result property="fundOrConsume" column="fund_or_consume" javaType="integer" jdbcType="TINYINT"/>
         <result property="userName" column="user_name" javaType="String" jdbcType="VARCHAR"/>
     </resultMap>
     <resultMap id="statisticsSettlementMap" type="com.valentichu.server.core.value.StatisticsSettlement">
         <result property="total" column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
-        <result property="userId" column="user_id" javaType="integer" jdbcType="TINYINT"/>
+        <result property="userId" column="user_id" javaType="integer" jdbcType="BIGINT"/>
         <result property="userName" column="user_name" javaType="string" jdbcType="VARCHAR"/>
     </resultMap>
     <resultMap id="statisticsConsumeTypeMap" type="com.valentichu.server.core.value.StatisticsConsumeType">
@@ -33,6 +33,16 @@
             <result property="total" column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
             <result property="fundOrConsume" column="fund_or_consume" javaType="integer" jdbcType="TINYINT"/>
         </collection>
+    </resultMap>
+    <resultMap id="itemOverviewMap" type="com.valentichu.server.core.value.SettlementDetail">
+        <result property="itemDescription" column="item_description" javaType="String" jdbcType="VARCHAR"/>
+        <result property="createdDate" column="created_date" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result property="userName" column="user_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="itemId" column="item_id" javaType="integer" jdbcType="BIGINT"/>
+        <result property="itemType" column="item_type" javaType="integer" jdbcType="TINYINT"/>
+        <result property="fundOrConsume" column="fund_or_consume" javaType="integer" jdbcType="TINYINT"/>
+        <result property="exp" column="exp" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="bill" column="bill" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
     </resultMap>
 
     <insert id="saveActivity" parameterType="com.valentichu.server.core.domain.Activity" useGeneratedKeys="true"
@@ -131,5 +141,23 @@
        WHERE open_id = #{openId}) t
        GROUP BY activity_id, activity_name, fund_or_consume, created_date
         ORDER BY activity_id
+    </select>
+    <select id="getAcitivity">
+        /*TODO*/
+    </select>
+    <select id="listItemByUser" resultMap="itemOverviewMap">
+        SELECT id.item_id,
+        id.user_name,
+        id.exp,
+        id.bill,
+        id.fund_or_consume,
+        i.item_description,
+        i.created_date,
+        i.item_type
+        FROM valentichu_aa.item_detail id
+        LEFT JOIN valentichu_aa.item i
+        ON id.item_id = i.item_id
+        WHERE id.user_id = #{userId}
+        ORDER BY fund_or_consume, item_id
     </select>
 </mapper>

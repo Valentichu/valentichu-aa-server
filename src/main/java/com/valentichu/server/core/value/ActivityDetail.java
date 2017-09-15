@@ -16,10 +16,19 @@ import java.util.List;
 public class ActivityDetail implements Serializable {
     private static final long serialVersionUID = 2115941636644124825L;
 
+    private Integer activityId;
     private String activityName;
     @JSONField(format = "yyyy-MM-dd")
     private Date createdDate;
     List<UserDetail> userDetailList;
+
+    public Integer getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
+    }
 
     public String getActivityName() {
         return activityName;

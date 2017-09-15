@@ -59,7 +59,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new ServiceException("登录信息有误");
         }
         return jwtTokenUtils.generateToken(response.getOpenId());
-
     }
 
     @Override

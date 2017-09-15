@@ -102,4 +102,9 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityOverview> listActivityOverview(String openId) {
         return activityMapper.listActivityOverview(openId);
     }
+
+    @Override
+    public List<SettlementDetail> listItemOverviewByUser(int userId) {
+        return activityMapper.listItemByUser(userId);
+    }
 }
