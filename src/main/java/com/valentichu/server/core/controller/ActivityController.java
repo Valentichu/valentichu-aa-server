@@ -61,6 +61,13 @@ public class ActivityController {
         return ResultGenerator.genSuccessResult(userDetailList);
     }
 
+    @RequestMapping(value = "/{activityId}", method = RequestMethod.GET)
+    @ApiOperation(value = "查询活动细节", notes = "查询活动细节 ")
+    public Result getActivityDetail(@PathVariable("activityId") @ApiParam("活动Id") int activityId) {
+        ActivityDetail activityDetailList = activityService.getActivityDetail(activityId);
+        return ResultGenerator.genSuccessResult(activityDetailList);
+    }
+
     @RequestMapping(value = "/{activityId}/user/{userId}/item", method = RequestMethod.GET)
     @ApiOperation(value = "列出用户的账目", notes = "列出用户的账目")
     public Result listItemByUser(@PathVariable("userId") @ApiParam("用户Id") int userId) {
@@ -83,4 +90,19 @@ public class ActivityController {
         StatisticsIndex statisticsIndex = activityService.getStatisticsIndex(activityId);
         return ResultGenerator.genSuccessResult(statisticsIndex);
     }
+
+    @RequestMapping(value = "/{activityId}", method = RequestMethod.PATCH)
+    @ApiOperation(value = "更新活动", notes = "更新活动")
+    public Result updateActivity(@RequestBody @ApiParam("要更新的活动") ActivityEdit activityEdit) {
+        activityService.updateActivity(activityEdit);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping(value = "/{activityId}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "删除活动", notes = "删除活动 ")
+    public Result deleteActivity(@PathVariable("activityId") @ApiParam("活动Id") int activityId) {
+        activityService.deleteActivity(activityId);
+        return ResultGenerator.genSuccessResult();
+    }
+
 }

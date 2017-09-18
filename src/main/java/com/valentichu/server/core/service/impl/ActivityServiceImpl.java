@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,5 +107,37 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<SettlementDetail> listItemOverviewByUser(int userId) {
         return activityMapper.listItemByUser(userId);
+    }
+
+    @Override
+    public ActivityDetail getActivityDetail(int activityId) {
+        return activityMapper.getActivity(activityId);
+    }
+
+    @Transactional
+    @Override
+    public void updateActivity(ActivityEdit activityEdit) {
+        if (activityEdit.getActivityNameEdit()) {
+            activityMapper.updateActivityName(activityEdit.getActivityId(), activityEdit.getActivityName());
+        }
+        for (UserDetail userAdd : activityEdit.getUserAddList()) {
+            ActivityUser activityUser = new ActivityUser();
+            activityUser.setActivityId(activityEdit.getActivityId());
+            activityUser.setUserName(userAdd.getUserName());
+            activityUser.setUserWeight(userAdd.getUserWeight());
+            activityMapper.bindUser(activityUser);
+        }
+        for (UserDetail userUpdate : activityEdit.getUserEditList()) {
+            activityMapper.updateActivityUser(userUpdate);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteActivity(int activityId) {
+        activityMapper.deleteActivity(activityId);
+        activityMapper.deleteActivityUserByActivityId(activityId);
+        activityMapper.deleteItemByActivityId(activityId);
+        activityMapper.deleteItemDetailByActivityId(activityId);
     }
 }

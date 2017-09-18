@@ -94,4 +94,64 @@ public interface ActivityMapper {
      * @return 账目的概览列表
      */
     List<SettlementDetail> listItemByUser(int userId);
+
+    /**
+     * 查询某活动的详情
+     *
+     * @param activityId 活动activityId
+     * @return 活动详情
+     */
+    ActivityDetail getActivity(int activityId);
+
+    /**
+     * 更改活动名称
+     *
+     * @param activityId   活动activityId
+     * @param activityName 活动activityName
+     * @return 影响的条数，应为1
+     */
+    int updateActivityName(int activityId, String activityName);
+
+    /**
+     * 更改某活动的用户
+     *
+     * @param userDetail 用户详情
+     * @return 影响的条数，应为1
+     */
+    int updateActivityUser(UserDetail userDetail);
+
+    /**
+     * 删除活动
+     *
+     * @param activityId 活动activityId
+     * @return 影响的条数
+     */
+    int deleteActivity(int activityId);
+
+
+    /**
+     * 删除活动用户
+     *
+     * @param activityId 活动activityId
+     * @return 影响的条数
+     */
+    int deleteActivityUserByActivityId(int activityId);
+
+
+    /**
+     * 删除活动账目
+     *
+     * @param activityId 活动activityId
+     * @return 影响的条数
+     */
+    int deleteItemByActivityId(int activityId);
+
+
+    /**
+     * 删除活动账目明细
+     *
+     * @param activityId 活动activityId
+     * @return 影响的条数
+     */
+    int deleteItemDetailByActivityId(int activityId);
 }

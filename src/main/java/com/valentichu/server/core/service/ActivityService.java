@@ -62,4 +62,28 @@ public interface ActivityService {
      * @return 账目的概览列表
      */
     List<SettlementDetail> listItemOverviewByUser(int userId);
+
+    /**
+     * 查询某活动的细节
+     *
+     * @param activityId 活动的activityId
+     * @return 活动细节
+     */
+    ActivityDetail getActivityDetail(int activityId);
+
+    /**
+     * 更新某活动
+     *
+     * @param activityEdit 要更新的活动
+     * @return 影响的条数
+     */
+    void updateActivity(ActivityEdit activityEdit);
+
+    /**
+     * 删除某活动
+     *
+     * @param activityId 活动的activityId
+     * @return 影响的条数
+     */
+    void deleteActivity(int activityId);
 }
