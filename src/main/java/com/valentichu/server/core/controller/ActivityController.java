@@ -75,10 +75,16 @@ public class ActivityController {
         return ResultGenerator.genSuccessResult(settlementDetailList);
     }
 
+    @RequestMapping(value = "/{activityId}/item/{itemId}", method = RequestMethod.PUT)
+    @ApiOperation(value = "更新用户的账目", notes = "更新用户的账目")
+    public Result updateItem(@RequestBody @ApiParam("活动账目") Item item) {
+        activityService.updateItem(item);
+        return ResultGenerator.genSuccessResult();
+    }
+
     @RequestMapping(value = "/{activityId}/item", method = RequestMethod.POST)
     @ApiOperation(value = "新增活动账目", notes = "新增活动账目 ")
     public Result addItem(@RequestBody @ApiParam("活动账目") Item item) throws ServiceException {
-        System.out.println(item);
         int itemId = activityService.saveItem(item);
         return ResultGenerator.genSuccessResult(itemId);
     }
@@ -99,10 +105,26 @@ public class ActivityController {
     }
 
     @RequestMapping(value = "/{activityId}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "删除活动", notes = "删除活动 ")
+    @ApiOperation(value = "删除活动", notes = "删除活动")
     public Result deleteActivity(@PathVariable("activityId") @ApiParam("活动Id") int activityId) {
         activityService.deleteActivity(activityId);
         return ResultGenerator.genSuccessResult();
     }
 
+    @RequestMapping(value = "/{activityId}/item/{itemId}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "删除账目", notes = "删除账目")
+    public Result deleteItem(@PathVariable("itemId") @ApiParam("账目Id") int itemId) {
+        activityService.deleteItem(itemId);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping(value = "/{activityId}/item/{itemId}", method = RequestMethod.GET)
+    @ApiOperation(value = "列出账目展示信息", notes = "列出账目展示信息")
+    public Result listItemView(@PathVariable("activityId") @ApiParam("活动Id") int activityId,
+                               @PathVariable("itemId") @ApiParam("账目Id") int itemId,
+                               HttpServletRequest request) {
+        String openId = requestUtils.getUserIdFromHeader(request);
+        List<ItemView> itemViewList = activityService.listItemView(activityId, itemId, openId);
+        return ResultGenerator.genSuccessResult(itemViewList);
+    }
 }

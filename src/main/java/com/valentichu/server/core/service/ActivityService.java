@@ -40,7 +40,7 @@ public interface ActivityService {
     int saveItem(Item item) throws ServiceException;
 
     /**
-     * 新建活动账目
+     * 列出统计信息
      *
      * @param activityId 活动Id
      * @return 供前端首页展示的统计信息
@@ -86,4 +86,28 @@ public interface ActivityService {
      * @return 影响的条数
      */
     void deleteActivity(int activityId);
+
+    /**
+     * 根据账目Id查询账目展示信息
+     *
+     * @param activityId 活动Id
+     * @param itemId     账目Id
+     * @return 账目的展示列表
+     */
+    List<ItemView> listItemView(int activityId, int itemId, String openId);
+
+    /**
+     * 删除账目
+     *
+     * @param itemId 账目Id
+     * @return 删除的条数，应为1
+     */
+    void deleteItem(int itemId);
+
+    /**
+     * 更新账目
+     *
+     * @param item 活动的账目
+     */
+    void updateItem(Item item);
 }

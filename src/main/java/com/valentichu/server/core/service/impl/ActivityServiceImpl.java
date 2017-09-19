@@ -129,6 +129,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         for (UserDetail userUpdate : activityEdit.getUserEditList()) {
             activityMapper.updateActivityUser(userUpdate);
+            activityMapper.updateItemDetailUserName(userUpdate);
         }
     }
 
@@ -139,5 +140,36 @@ public class ActivityServiceImpl implements ActivityService {
         activityMapper.deleteActivityUserByActivityId(activityId);
         activityMapper.deleteItemByActivityId(activityId);
         activityMapper.deleteItemDetailByActivityId(activityId);
+    }
+
+    @Override
+    public List<ItemView> listItemView(int activityId, int itemId, String openId) {
+        List<ItemView> itemViewList = activityMapper.listItemView(activityId, itemId);
+        for (ItemView itemView : itemViewList) {
+            if (openId.equals(itemView.getOpenId())) {
+                itemView.setCurrentUser(true);
+            }
+        }
+        return itemViewList;
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteItem(int itemId) {
+        activityMapper.deleteItemByItemId(itemId);
+        activityMapper.deleteItemDetailByItemId(itemId);
+    }
+
+
+    @Transactional
+    @Override
+    public void updateItem(Item item) {
+        activityMapper.deleteItemDetailByItemId(item.getItemId());
+        activityMapper.updateItem(item);
+        for (ItemDetail itemDetail : item.getItemDetailList()) {
+            itemDetail.setItemId(item.getItemId());
+            activityMapper.bindItemDetail(itemDetail);
+        }
     }
 }

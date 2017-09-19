@@ -56,6 +56,14 @@ public interface ActivityMapper {
     int bindItemDetail(ItemDetail itemDetail);
 
     /**
+     * 更新活动账目
+     *
+     * @param item 活动账目
+     * @return 插入的条数
+     */
+    int updateItem(Item item);
+
+    /**
      * 查询某活动的统计明细
      *
      * @param activityId 活动id
@@ -120,6 +128,15 @@ public interface ActivityMapper {
      */
     int updateActivityUser(UserDetail userDetail);
 
+
+    /**
+     * 更改活动中所有账目细节的用户名
+     *
+     * @param userDetail 用户详情
+     * @return 影响的条数
+     */
+    int updateItemDetailUserName(UserDetail userDetail);
+
     /**
      * 删除活动
      *
@@ -146,6 +163,14 @@ public interface ActivityMapper {
      */
     int deleteItemByActivityId(int activityId);
 
+    /**
+     * 删除活动账目
+     *
+     * @param itemId 活动activityId
+     * @return 影响的条数
+     */
+    int deleteItemByItemId(int itemId);
+
 
     /**
      * 删除活动账目明细
@@ -154,4 +179,21 @@ public interface ActivityMapper {
      * @return 影响的条数
      */
     int deleteItemDetailByActivityId(int activityId);
+
+    /**
+     * 删除活动账目明细
+     *
+     * @param itemId 账目itemId
+     * @return 影响的条数
+     */
+    int deleteItemDetailByItemId(int itemId);
+
+    /**
+     * 根据账目Id查询账目展示信息
+     *
+     * @param activityId 活动Id
+     * @param itemId     账目Id
+     * @return 账目的展示列表
+     */
+    List<ItemView> listItemView(int activityId, int itemId);
 }

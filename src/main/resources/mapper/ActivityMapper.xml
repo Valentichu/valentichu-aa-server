@@ -53,6 +53,20 @@
             <result property="userWeight" column="user_weight" javaType="integer" jdbcType="INTEGER"/>
         </collection>
     </resultMap>
+    <resultMap id="itemViewMap" type="com.valentichu.server.core.value.ItemView">
+        <result property="openId" column="open_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="itemDescription" column="item_description" javaType="String" jdbcType="VARCHAR"/>
+        <result property="itemNote" column="item_note" javaType="String" jdbcType="VARCHAR"/>
+        <result property="createdDate" column="created_date" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result property="userName" column="user_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" javaType="integer" jdbcType="BIGINT"/>
+        <result property="itemType" column="item_type" javaType="integer" jdbcType="TINYINT"/>
+        <result property="itemTotal" column="item_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="exp" column="exp" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="bill" column="bill" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="detailId" column="detail_id" javaType="integer" jdbcType="BIGINT"/>
+        <result property="userWeight" column="user_weight" javaType="integer" jdbcType="INTEGER"/>
+    </resultMap>
 
     <insert id="saveActivity" parameterType="com.valentichu.server.core.domain.Activity" useGeneratedKeys="true"
             keyProperty="activityId">
@@ -86,6 +100,18 @@
         #{itemTotal},
         #{createdDate},
         now())
+    </insert>
+    <insert id="updateItem" parameterType="com.valentichu.server.core.domain.Item">
+        UPDATE item SET item_type = #{itemType},
+        item_description = #{itemDescription},
+        item_note = #{itemNote},
+        fund_or_consume =  #{fundOrConsume},
+        activity_id =  #{activityId},
+        user_id = #{userId},
+        item_total = #{itemTotal},
+        created_date = #{createdDate},
+        gmt_modified = now()
+        WHERE item_id = #{itemId}
     </insert>
     <insert id="bindItemDetail" parameterType="com.valentichu.server.core.domain.ItemDetail" useGeneratedKeys="true"
             keyProperty="detailId">
@@ -186,6 +212,10 @@
         UPDATE activity_user SET user_name = #{userName}, user_weight = #{userWeight}, gmt_modified = now()
         WHERE user_id = #{userId}
     </update>
+    <update id="updateItemDetailUserName" parameterType="com.valentichu.server.core.value.UserDetail">
+        UPDATE item_detail SET user_name = #{userName}, gmt_modified = now()
+        WHERE user_id = #{userId}
+    </update>
     <delete id="deleteActivity">
         DELETE FROM activity WHERE activity_id = #{activityId}
     </delete>
@@ -198,4 +228,31 @@
     <delete id="deleteItemDetailByActivityId">
         DELETE FROM item_detail WHERE activity_id = #{activityId}
     </delete>
+    <delete id="deleteItemDetailByItemId">
+        DELETE FROM item_detail WHERE item_id = #{itemId}
+    </delete>
+    <delete id="deleteItemByItemId">
+         DELETE FROM item WHERE item_id = #{itemId}
+    </delete>
+    <select id="listItemView" resultMap="itemViewMap">
+        SELECT au.user_name,
+        au.open_id,
+        au.user_id,
+        id.detail_id,
+        id.exp,
+        id.bill,
+        ifnull(id.user_weight,au.user_weight) as user_weight,
+        i.created_date,
+        i.item_description,
+        i.item_total,
+        i.item_type,
+        i.item_note
+        FROM activity_user au
+        LEFT JOIN item_detail id
+        ON au.user_id = id.user_id AND id.item_id = #{param2}
+        LEFT JOIN item i
+        ON id.item_id = i.item_id
+        WHERE au.activity_id = #{param1}
+        ORDER BY au.user_id
+    </select>
 </mapper>
