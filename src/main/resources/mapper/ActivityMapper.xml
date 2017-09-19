@@ -144,11 +144,11 @@
         FROM item i
         LEFT JOIN item_detail id
         ON i.item_id = id.item_id
-        WHERE i.activity_id = #{activityId}
         AND (
         (id.fund_or_consume = 1 AND id.exp > 0)
         OR (id.fund_or_consume= 0 AND id.bill > 0)
         )
+        WHERE i.activity_id = #{activityId}
         ORDER BY i.item_id
     </select>
     <select id="listStatisticsSettlement" resultMap="statisticsSettlementMap">
