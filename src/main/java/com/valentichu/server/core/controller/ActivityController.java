@@ -97,7 +97,7 @@ public class ActivityController {
         return ResultGenerator.genSuccessResult(statisticsIndex);
     }
 
-    @RequestMapping(value = "/{activityId}", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/{activityId}", method = RequestMethod.PUT)
     @ApiOperation(value = "更新活动", notes = "更新活动")
     public Result updateActivity(@RequestBody @ApiParam("要更新的活动") ActivityEdit activityEdit) {
         activityService.updateActivity(activityEdit);
